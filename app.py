@@ -1,20 +1,37 @@
-name = input("Enter your name: ")
-grade_marks = float(input("What is your mark?"'\n'))
+from flask import Flask, request
 
-if grade_marks < 0 or grade_marks > 100:
-    print("Enter a valid mark\u2757")
-else:
-    print("--**-- RESULT --**--")
-    print("Name:", name)
+app = Flask(__name__)
+
+@app.route("/")
+def grade_calculator():
+    # Get parameters from URL query string, e.g., ?name=John&marks=85
+    name = request.args.get("name", default="Student")
+    try:
+        grade_marks = float(request.args.get("marks", default=0))
+    except ValueError:
+        return "Enter a valid number for marks ❗"
+
+    # Validate marks
+    if grade_marks < 0 or grade_marks > 100:
+        return "Enter a valid mark ❗"
+
+    # Determine grade
+    result = f"--**-- RESULT --**--\nName: {name}\n"
     if grade_marks >= 80:
-        print("Your grade is: A+ \U0001F389")
+        result += "Your grade is: A+ 🎉"
     elif grade_marks >= 70:
-        print("Your grade is: A \U0001F64C")
+        result += "Your grade is: A 🙌"
     elif grade_marks >= 60:
-        print("Your grade is: B \U0001F44F")
+        result += "Your grade is: B 👏"
     elif grade_marks >= 50:
-        print("Your grade is: C \U0001F44D")
+        result += "Your grade is: C 👍"
     elif grade_marks >= 40:
-        print("Your grade is: D \U0001F44E")
+        result += "Your grade is: D 👎"
     else:
-        print("\U0000274C You didn't get pass marks \U0001F622")
+        result += "❌ You didn't get pass marks 😢"
+
+    # Return result as plain text
+    return f"<pre>{result}</pre>"
+
+if __name__ == "__main__":
+    app.run(debug=True)
